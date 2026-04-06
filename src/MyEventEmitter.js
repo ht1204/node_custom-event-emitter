@@ -49,18 +49,21 @@ class MyEventEmitter {
       return false;
     }
 
-    const toRemove = [];
+    const listenersCopy = [...listeners];
+    const toRemove = new Set();
 
-    listeners.forEach((item, index) => {
+    for (const item of listenersCopy) {
       item.listener(...args);
 
       if (item.once) {
-        toRemove.push(index);
+        toRemove.add(item);
       }
-    });
+    }
 
-    for (let i = toRemove.length - 1; i >= 0; i--) {
-      listeners.splice(toRemove[i], 1);
+    for (let i = listeners.length - 1; i >= 0; i--) {
+      if (toRemove.has(listeners[i])) {
+        listeners.splice(i, 1);
+      }
     }
 
     return true;
